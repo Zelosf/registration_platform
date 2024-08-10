@@ -1,0 +1,24 @@
+from rest_framework import viewsets, permissions
+from .models import Event, Speaker, Program, Ticket, AuthenticateUser
+from .serializers import EventSerializer, SpeakerSerializer, ProgramSerializer, TicketSerializer
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+class SpeakerViewSet(viewsets.ModelViewSet):
+    queryset = Speaker.objects.all()
+    serializer_class = SpeakerSerializer
+
+class ProgramViewSet(viewsets.ModelViewSet):
+    queryset = Program.objects.all()
+    serializer_class = ProgramSerializer
+
+
+class TicketViewSet(viewsets.ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketSerializer
+
+
+class AuthenticateUserViewSet(viewsets.ModelViewSet):
+    queryset = AuthenticateUser.objects.all()

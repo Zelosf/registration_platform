@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Programs</h1>
+<div class="row">
+    {% for program in programs %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="card-title">{{ program.event_name }}</h4>
+                <h5 class="card-title">{{ program.event_date }}</h5>
+                <p class="card-text">Start Time: {{ program.start_time }}</p>
+                <p class="card-text">End Time: {{ program.end_time }}</p>
+                <p class="card-text">Description: {{ program.description }}</p>
+                <p class="card-text">Available Tickets: {{ program.available_tickets }}/{{ program.total_tickets }}</p>
+                <p class="card-text">
+                    Speaker:
+                    {% if program.speaker_name %}
+                        <a href="{% url 'speaker_detail' program.speaker %}">{{ program.speaker_name }}</a>
+                    {% else %}
+                        {{ program.speaker_name }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
