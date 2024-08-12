@@ -26,8 +26,15 @@ def login_view(request):
                 if data['status'] == 'success':
                     # Успешная аутентификация
                     user, created = User.objects.get_or_create(username=username)
-                    login(request, user)
-                    return redirect('/program/')  # Используйте имя маршрута, а не путь к файлу
+                    if user is not None:
+                        login(request, user)
+                        if data.get('is_admin'):
+                            user.is_superuser = True
+                            user.save()
+
+                        return redirect('/program/')
+                    else:
+                        messages.error(request, 'Invalid credentials')
                 else:
                     messages.error(request, 'Invalid credentials')
             except requests.RequestException as e:

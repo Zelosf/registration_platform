@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse ,HttpResponseForbidden
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -27,7 +27,11 @@ def program_list(request):
         program['event_date'] = event_dates.get(program['event'], 'Unknown Event')
         program['speaker_name'] = speaker_name.get(program['speaker'], 'Unknown Speaker')
 
-    return render(request, 'events/programs.html', {'programs': programs})
+    context = {
+        'programs': programs,
+        'is_admin': request.user.is_superuser
+    }
+    return render(request, 'events/programs.html', context)
 
 
 def event_list(request):
@@ -64,3 +68,51 @@ def register(request):
         return JsonResponse({"success": False, "message": str(e)})
     except Exception as e:
         return JsonResponse({"success": False, "message": "An unexpected error occurred."})
+
+
+@login_required
+def edit_program(request, program_id):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You are not allowed to edit programs.")
+
+    response = requests.get(f'{settings.APP_A_URL}/api/programs/{program_id}/')
+    if response.status_code != 200:
+        return redirect('/program/')
+
+    program = response.json()
+    events_response = requests.get(f'{settings.APP_A_URL}/api/events/')
+    speakers_response = requests.get(f'{settings.APP_A_URL}/api/speakers/')
+
+    if events_response.status_code == 200:
+        events = events_response.json()
+    else:
+        events = []
+
+    if speakers_response.status_code == 200:
+        speakers = speakers_response.json()
+    else:
+        speakers = []
+
+    if request.method == 'POST':
+        data = {
+            'event': request.POST['event_name'],
+            'event_date': request.POST['event_date'],
+            'start_time': request.POST['start_time'],
+            'end_time': request.POST['end_time'],
+            'description': request.POST['description'],
+            'available_tickets': request.POST['available_tickets'],
+            'total_tickets': request.POST['total_tickets'],
+            'speaker': request.POST['speaker']
+        }
+        update_response = requests.put(
+            f'{settings.APP_A_URL}/api/programs/{program_id}/',
+            json=data
+        )
+        if update_response.status_code == 200:
+            return redirect('/program/')
+        else:
+            return render(request, 'events/edit_program.html',
+                          {'program': program, 'events': events, 'speakers': speakers,
+                           'error': 'Failed to update program.'})
+
+    return render(request, 'events/edit_program.html', {'program': program, 'events': events, 'speakers': speakers})

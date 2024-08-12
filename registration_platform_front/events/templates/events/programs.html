@@ -3,11 +3,7 @@
 {% block content %}
 <h1>Programs</h1>
 <div class="row">
-    {% if request.user.is_superuser %}
-        <p>Привет, админ!</p>
-    {% else %}
-        <p>Привет, {{ request.user.username }}!</p>
-    {% endif %}
+
     {% for program in programs %}
     <div class="col-md-4">
         <div class="card mb-4">
@@ -26,45 +22,49 @@
                         {{ program.speaker_name }}
                     {% endif %}
                 </p>
-                <form id="register-form-{{ program.id }}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-success">Register</button>
-                </form>
-                <script>
-                    document.getElementById('register-form-{{ program.id }}').addEventListener('submit', function(event) {
-                        event.preventDefault();
-                        fetch('/api/register/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': '{{ csrf_token }}',
-                            },
-                            body: JSON.stringify({
-                                program: {{ program.id }},
-                                user: {{ request.user.id }}
-                            }),
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(data => {
-                                    throw new Error(data.message || 'Unknown error');
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                alert('Registration successful!');
-                            } else {
-                                alert('Registration failed: ' + (data.message || 'Unknown error'));
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Registration failed: ' + error.message);
+                {% if is_admin %}
+                    <a href="{% url 'update_program' program.id %}" class="btn btn-success">Edit</a>
+                {% else %}
+                    <form id="register-form-{{ program.id }}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Register</button>
+                    </form>
+                    <script>
+                        document.getElementById('register-form-{{ program.id }}').addEventListener('submit', function(event) {
+                            event.preventDefault();
+                            fetch('/api/register/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': '{{ csrf_token }}',
+                                },
+                                body: JSON.stringify({
+                                    program: {{ program.id }},
+                                    user: {{ request.user.id }}
+                                }),
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(data => {
+                                        throw new Error(data.message || 'Unknown error');
+                                    });
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Registration successful!');
+                                } else {
+                                    alert('Registration failed: ' + (data.message || 'Unknown error'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Registration failed: ' + error.message);
+                            });
                         });
-                    });
-                </script>
+                    </script>
+                {% endif %}
             </div>
         </div>
     </div>
