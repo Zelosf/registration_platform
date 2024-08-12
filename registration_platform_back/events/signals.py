@@ -9,5 +9,7 @@ def update_available_tickets(sender, instance, **kwargs):
     if kwargs.get('created', False):
         program = instance.program
         if not program.can_create_ticket():
+            # Удаляем объект Ticket, если билеты закончились
             instance.delete()
-            raise ValidationError("No available tickets for the program with ID {program.id}")
+            # Генерируем ошибку
+            raise ValidationError(f"No available tickets for the program with ID {program.id}")
