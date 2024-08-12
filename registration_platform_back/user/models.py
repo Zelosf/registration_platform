@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
         return self.username
 
 
+
 class UserAuthenticationService:
     def __init__(self, username, password, request=None):
         self.username = username
