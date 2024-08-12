@@ -137,4 +137,3 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 AUTH_USER_MODEL = 'user.CustomUser'
-
