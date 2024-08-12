@@ -9,7 +9,7 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h4 class="card-title">{{ program.event_name }}</h4>
-                <h5 class="card-title">{{ program.event_date }}</h5>
+                <h5 class="card-title">{{ program.date }}</h5>
                 <p class="card-text">Start Time: {{ program.start_time }}</p>
                 <p class="card-text">End Time: {{ program.end_time }}</p>
                 <p class="card-text">Description: {{ program.description }}</p>
@@ -32,6 +32,11 @@
                     <script>
                         document.getElementById('register-form-{{ program.id }}').addEventListener('submit', function(event) {
                             event.preventDefault();
+                            const availableTickets = {{ program.available_tickets }};
+                            if (availableTickets <= 0) {
+                                alert('No available tickets for this program.');
+                                return;
+                            }
                             fetch('/api/register/', {
                                 method: 'POST',
                                 headers: {
@@ -54,6 +59,7 @@
                             .then(data => {
                                 if (data.success) {
                                     alert('Registration successful!');
+                                    location.reload();
                                 } else {
                                     alert('Registration failed: ' + (data.message || 'Unknown error'));
                                 }

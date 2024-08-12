@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from events.views import event_list, event_detail, register, program_list, speaker_detail, edit_program
+from events.views import register, program_list, speaker_detail, edit_program, user_tickets
+# from events.views import event_list, event_detail
 from user.views import login_view
 
 urlpatterns = [
@@ -27,5 +28,6 @@ urlpatterns = [
     path('speakers/<int:speaker_id>', speaker_detail, name='speaker_detail'),
     path('api/register/', register, name='register'),
     path('login/', login_view, name='login'),
-    path('program/<int:program_id>/edit/', edit_program, name='update_program')
+    path('program/<int:program_id>/edit/', edit_program, name='update_program'),
+    path('my-tickets/', user_tickets, name='user_tickets'),
 ]
