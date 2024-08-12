@@ -9,5 +9,5 @@ router.register(r'programs', ProgramViewSet)
 router.register(r'tickets', TicketViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls))
 ]

@@ -1,36 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.core.exceptions import ValidationError
 import uuid
-
-
-class CustomUser(AbstractUser):
-    groups = models.ManyToManyField(
-        Group,
-        related_name='customuser_set',
-        blank=True,
-        related_query_name='customuser',
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='customuser_set',
-        blank=True,
-        related_query_name='customuser',
-    )
-
-
-# class Event1(models.Model):
-#     EVENT_TYPES = [
-#         ('conference', 'Conference'),
-#         ('seminar', 'Seminar'),
-#         ('coffee_break', 'Coffee Break'),
-#     ]
-#     name = models.CharField(max_length=255)
-#     event_type = models.CharField(max_length=50, choices=EVENT_TYPES)
-#     description = models.TextField()
-#
-#     def __str__(self):
-#         return self.name
+from user.models import CustomUser
 
 
 class Event(models.Model):
@@ -109,7 +80,6 @@ class Program(models.Model):
 class Ticket(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    status = models.CharField(max_length=50)
     electronic_ticket = models.CharField(max_length=255, blank=True, editable=False)
 
     def __str__(self):
@@ -122,4 +92,3 @@ class Ticket(models.Model):
         super().save(*args, **kwargs)
 
 
-class AuthenticateUser()
