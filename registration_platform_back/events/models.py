@@ -13,7 +13,7 @@ class Event(models.Model):
 
     name = models.CharField(max_length=255)
     event_type = models.CharField(choices=EVENT_TYPES, max_length=50)
-    date = models.DateField()
+
 
     def __str__(self):
         return self.name
@@ -31,6 +31,7 @@ class Speaker(models.Model):
 class Program(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     speaker = models.ForeignKey(Speaker, on_delete=models.CASCADE)
+    date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     description = models.TextField()
@@ -44,7 +45,7 @@ class Program(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.event.name} - {self.speaker.name} at {self.event.date}: {self.start_time}"
+        return f"{self.event.name} - {self.speaker.name} at {self.date}: {self.start_time}"
 
     def clean(self):
         super().clean()
