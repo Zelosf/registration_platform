@@ -125,4 +125,5 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Add url to back project
 APP_A_URL = 'http://localhost:8000'

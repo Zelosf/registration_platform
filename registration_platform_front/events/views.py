@@ -5,19 +5,20 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import json
-
 from rest_framework.exceptions import ValidationError
 
 
+# Retrieving all required data about the program
 @login_required
 def program_list(request):
+    # Retrieving program data.
     response_programs = requests.get(f'{settings.APP_A_URL}/api/programs/')
     programs = response_programs.json() if response_programs.status_code == 200 else []
-
+    # Retrieving event name by event ID.
     response_events = requests.get(f'{settings.APP_A_URL}/api/events/')
     events = response_events.json() if response_events.status_code == 200 else {}
     event_names = {event['id']: event['name'] for event in events}
-
+    # Retrieving Speaker name by Speaker ID.
     response_speakers = requests.get(f'{settings.APP_A_URL}/api/speakers/')
     speakers = response_speakers.json() if response_speakers.status_code == 200 else {}
     speaker_name = {speaker['id']: speaker['name'] for speaker in speakers}
@@ -32,35 +33,24 @@ def program_list(request):
     return render(request, 'events/programs.html', context)
 
 
-# def event_list(request):
-#     response = requests.get(f'{settings.APP_A_URL}/api/events/')
-#     events = response.json()
-#     return render(request, 'events/event_list.html', {'events': events})
-#
-#
-# def event_detail(request, event_id):
-#     response = requests.get(f'{settings.APP_A_URL}/api/events/{event_id}/')
-#     event = response.json()
-#     return render(request, 'events/event_detail.html', {'event': event})
-
-
+# Retrieving full information about the Speaker
 def speaker_detail(request, speaker_id):
     response = requests.get(f'{settings.APP_A_URL}/api/speakers/{speaker_id}/')
     speaker = response.json()
     return render(request, 'events/speaker_detail.html', {'speaker': speaker})
 
 
+# Registers a user via the ticket creation API.
 @login_required
 @require_POST
 def register(request):
     try:
-        # Получение данных из тела запроса
         data = json.loads(request.body)
 
-        # Отправка данных на внешний API
+        # Sending data to an external API
         response = requests.post(f'{settings.APP_A_URL}/api/tickets/', json=data)
 
-        # Возврат ответа от внешнего API
+        # Returning response from the external API
         return JsonResponse({"success": True})
     except ValidationError as e:
         return JsonResponse({"success": False, "message": str(e)})
@@ -68,8 +58,10 @@ def register(request):
         return JsonResponse({"success": False, "message": "An unexpected error occurred."})
 
 
+# Retrieves all required fields, including values for the drop-down menu
 @login_required
 def edit_program(request, program_id):
+    # Checking for superuser status
     if not request.user.is_superuser:
         return HttpResponseForbidden("You are not allowed to edit programs.")
 
@@ -115,13 +107,14 @@ def edit_program(request, program_id):
 
     return render(request, 'events/edit_program.html', {'program': program, 'events': events, 'speakers': speakers})
 
+
 @login_required
 def user_tickets(request):
-    # Получаем список билетов для текущего пользователя
+    # Retrieving the list of tickets for the current user
     response_tickets = requests.get(f'{settings.APP_A_URL}/api/tickets/', params={'user': request.user.id})
     tickets = response_tickets.json() if response_tickets.status_code == 200 else []
 
-    # Получаем данные о программах
+    # Retrieving data about programs
     response_programs = requests.get(f'{settings.APP_A_URL}/api/programs/')
     programs = response_programs.json() if response_programs.status_code == 200 else []
     programs_date = {program['id']: program['date'] for program in programs}
@@ -130,17 +123,17 @@ def user_tickets(request):
     programs_event = {program['id']: program['event'] for program in programs}
     programs_speaker = {program['id']: program['speaker'] for program in programs}
 
-    # Получаем данные о событиях
+    # Retrieving data about events
     response_events = requests.get(f'{settings.APP_A_URL}/api/events/')
     events = response_events.json() if response_events.status_code == 200 else {}
     event_names = {event['id']: event['name'] for event in events}
 
-    # Получаем данные о спикерах
+    # Retrieving data about speakers
     response_speakers = requests.get(f'{settings.APP_A_URL}/api/speakers/')
     speakers = response_speakers.json() if response_speakers.status_code == 200 else {}
     speaker_name = {speaker['id']: speaker['name'] for speaker in speakers}
 
-    # Обновляем информацию о билетах
+    # Updating ticket information
     for ticket in tickets:
         program_id = ticket.get('program')
         ticket['programs_date'] = programs_date.get(program_id, 'Unknown Date')

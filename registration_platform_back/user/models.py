@@ -12,7 +12,6 @@ class CustomUser(AbstractUser):
         return self.username if self.username else f"User {self.id}"
 
 
-
 class UserAuthenticationService:
     def __init__(self, username, password, request=None):
         self.username = username
@@ -26,7 +25,6 @@ class UserAuthenticationService:
 
     def get_response(self):
         if self.user is not None:
-            # Аутентификация успешна
             return JsonResponse({
                 'status': 'success',
                 'user_id': self.user.id,
@@ -34,5 +32,4 @@ class UserAuthenticationService:
                 'is_admin': self.user.is_superuser,
             })
         else:
-            # Аутентификация не удалась
             return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=401)

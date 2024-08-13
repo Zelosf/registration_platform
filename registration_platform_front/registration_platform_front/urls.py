@@ -17,14 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from events.views import register, program_list, speaker_detail, edit_program, user_tickets
-# from events.views import event_list, event_detail
 from user.views import login_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('program/', program_list, name='program_list'),
-    # path('program/<int:program_id>/', event_list, name='event_list'),
-    # path('program/<int:program_id>/<int:event_id>/', event_detail, name='event_detail'),
     path('speakers/<int:speaker_id>', speaker_detail, name='speaker_detail'),
     path('api/register/', register, name='register'),
     path('login/', login_view, name='login'),

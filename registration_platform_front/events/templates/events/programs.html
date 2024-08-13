@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if not is_admin %}
+    <h2><a href="/my-tickets/">My Tickets</a></h2>
+{% endif %}
 <h1>Programs</h1>
 <div class="row">
 
