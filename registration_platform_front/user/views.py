@@ -15,19 +15,24 @@ def login_view(request):
             password = form.cleaned_data['password']
 
             try:
-                # Отправка данных на API приложения A
                 response = requests.post(
                     f'{settings.APP_A_URL}/api/authenticate/',
                     data={'username': username, 'password': password}
                 )
-                response.raise_for_status()  # Проверка на HTTP ошибки
+                response.raise_for_status()
+
+                print(f"Response status code: {response.status_code}")
+                print(f"Response body: {response.json()}")
+
                 data = response.json()
 
                 if data['status'] == 'success':
-                    # Успешная аутентификация
                     user, created = User.objects.get_or_create(username=username)
                     if user is not None:
                         login(request, user)
+                        organization_id = data.get('organization_id')
+                        if organization_id:
+                            request.session['organization_id'] = organization_id
                         if data.get('is_admin'):
                             user.is_superuser = True
                             user.save()
@@ -39,6 +44,7 @@ def login_view(request):
                     messages.error(request, 'Invalid credentials')
             except requests.RequestException as e:
                 messages.error(request, f'Authentication service unavailable: {e}')
+                print(f"Request exception: {e}")
     else:
         form = LoginForm()
 

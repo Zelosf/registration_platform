@@ -6,7 +6,7 @@ router = DefaultRouter()
 router.register(r'events', EventViewSet)
 router.register(r'speakers', SpeakerViewSet)
 router.register(r'programs', ProgramViewSet)
-router.register(r'tickets', TicketViewSet)
+router.register(r'tickets', TicketViewSet, basename='ticket')
 
 urlpatterns = [
     path('', include(router.urls))

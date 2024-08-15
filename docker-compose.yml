@@ -1,0 +1,75 @@
+
+version: '3'
+
+services:
+  django_back_app:
+    build:
+      context: ./registration_platform_back
+      dockerfile: Dockerfile
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    restart: on-failure
+    ports:
+      - 8000:8000
+    volumes:
+      - ./registration_platform_back:/django_app/registration_platform_back
+    depends_on:
+      - psql_db_b
+    environment:
+      API_PORT: 8000
+    networks:
+      - app_network
+
+  psql_db_b:
+    image: postgres
+    restart: always
+    container_name: pg-db
+    environment:
+      POSTGRES_DB: registration_platform_back_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+  django_front_app:
+    build:
+      context: ./registration_platform_front
+      dockerfile: Dockerfile
+    command: bash -c "python manage.py runserver 0.0.0.0:8001"
+    ports:
+      - 8001:8001
+    volumes:
+      - ./registration_platform_front:/django_app/registration_platform_front
+    depends_on:
+      - django_back_app
+      - psql_db_f
+    networks:
+      - app_network
+
+
+  psql_db_f:
+    image: postgres
+    restart: always
+    container_name: pg-db-f
+    environment:
+      POSTGRES_DB: registration_platform_front_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    depends_on:
+      - psql_db_b
+    networks:
+      - app_network
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

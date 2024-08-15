@@ -19,5 +19,9 @@ class ProgramViewSet(viewsets.ModelViewSet):
 
 
 class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
+    # queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Ticket.objects.filter(user=user)
