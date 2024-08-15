@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-3^12a@489djc&u)7qmgv2po%io^kiu8@#^==9#bxb+64wye^hw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -85,8 +85,8 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'registration_platform_back_db'),
         'USER': os.getenv('DB_USER', 'admin'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'admin'),
-        'HOST': os.getenv('DB_HOST', 'psql_db'),
-        'PORT': os.getenv('DB_PORT', ''),
+        'HOST': os.getenv('DB_HOST', 'psql_db_b'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -132,8 +132,17 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:8001',
+#     'http://127.0.0.1:8001',
+# ]
+
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8001',
+    "http://django_front_app:8001",
+    "http://192.168.0.125:8001",
 ]
 
 AUTH_USER_MODEL = 'user.CustomUser'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

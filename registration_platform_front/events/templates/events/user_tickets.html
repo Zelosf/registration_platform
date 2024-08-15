@@ -5,9 +5,10 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Ticket</th>
+            <th>TicketQR</th>
+            <th>TicketID</th>
             <th>Event</th>
-            <th>Date</th>
+            <th style="width: 110px;">Date</th>
             <th>Start Time</th>
             <th>End Time</th>
             <th>Speaker</th>
@@ -16,12 +17,20 @@
     <tbody>
         {% for ticket in tickets %}
         <tr>
+            <td>
+                {% if ticket.qr_code %}
+                    <img src="{{ ticket.qr_code }}" alt="QR Code" />
+                {% else %}
+                    No QR code available.
+                {% endif %}
+            </td>
             <td>{{ ticket.electronic_ticket }}</td>
             <td>{{ ticket.program_event_name }}</td>
             <td>{{ ticket.programs_date }}</td>
             <td>{{ ticket.programs_start_time }}</td>
             <td>{{ ticket.programs_end_time }}</td>
             <td>{{ ticket.program_speaker_name }}</td>
+
         </tr>
         {% empty %}
         <tr>
@@ -30,4 +39,5 @@
         {% endfor %}
     </tbody>
 </table>
+<input type="button" class="btn btn-success" onclick="history.back();" value="Back">
 {% endblock %}

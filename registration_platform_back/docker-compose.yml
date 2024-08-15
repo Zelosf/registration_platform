@@ -10,6 +10,8 @@ services:
       - "8000:8000"
     depends_on:
       - psql_db
+    networks:
+      - app_network
 
   psql_db:
     image: postgres
@@ -19,30 +21,74 @@ services:
       POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
+    networks:
+      - app_network
 
   redis:
     image: redis
     ports:
       - "6379:6379"
+    networks:
+      - app_network
 
-#  celety-beat:
-#    build: .
-#    command: celery -A registration_platform_back_db beat -l info
-#    volumes:
-#      - ./registration_platform_back_db:/django_app/registration_platform_back_db
-#    depends_on:
-#      - redis
-#    environment:
-#      - CELERY_BROKER_URL=redis://redis:6379/0
-#      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+networks:
+  app_network:
+    driver: bridge
 
-#  celery-worker:
+#
+#version: '3'
+#
+#services:
+#  django_back_app:
 #    build: .
-#    command: celery -A registration_platform_back_db worker -l info
+#    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+#    restart: on-failure
+#    ports:
+#      - 8000:8000
 #    volumes:
-#      - ./registration_platform_back_db:/django_app/registration_platform_back_db
+#      - ./registration_platform_back:/django_app/registration_platform_back
 #    depends_on:
-#      - redis
+#      - psql_db
 #    environment:
-#      - CELERY_BROKER_URL=redis://redis:6379/0
-#      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+#      API_PORT: 8000
+#    networks:
+#      - app_network
+#
+#  psql_db:
+#    image: postgres
+#    restart: always
+#    container_name: pg-db
+#    environment:
+#      POSTGRES_DB: registration_platform_back_db
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: admin
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - app_network
+#
+#  django_front_app:
+#    build:
+#      context: ../registration_platform_front
+#      dockerfile: Dockerfile
+#    command: bash -c "python manage.py runserver 0.0.0.0:8001"
+#    ports:
+#      - 8001:8001
+#    volumes:
+#      - ./registration_platform_front:/django_app/registration_platform_front
+#    depends_on:
+#      - django_back_app
+#    networks:
+#      - app_network
+#
+#
+#  redis:
+#    image: redis
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - app_network
+#
+#networks:
+#  app_network:
+#    driver: bridge
